@@ -1,6 +1,15 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import {
+  ClerkProvider,
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+} from "@clerk/nextjs";
+import Navbar from "@/app/(components)/Navbar";
+import AppContextProvider from "./(components)/AppContext";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -24,12 +33,38 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        >
+          <div className="w-full h-full flex p-8 justify-evenly bg-primary">
+            <SignedOut>
+              <div className="w-full h-full flex items-center gap-5 justify-center">
+                <SignInButton mode="modal">
+                  <button className="signbtn">Sign In</button>
+                </SignInButton>
+                <SignUpButton mode="modal">
+                  <button className="signbtn">Sign Up</button>
+                </SignUpButton>
+              </div>
+            </SignedOut>
+            <SignedIn>
+              <div className="flex gap-5 w-full h-full flex-col sm:flex-row">
+                <Navbar />
+                <AppContextProvider>
+                  <div
+                    className="grayComp flex flex-col w-full wide"
+                    // style={{ width: "100%" }}
+                  >
+                    {children}
+                  </div>
+                </AppContextProvider>
+              </div>
+            </SignedIn>
+          </div>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
